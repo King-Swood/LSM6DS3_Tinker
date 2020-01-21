@@ -39,9 +39,12 @@
 
 /* Includes ------------------------------------------------------------------*/
 
-#include "Arduino.h"
-#include "Wire.h"
+//#include "Arduino.h"
+//#include "Wire.h"
 #include "LSM6DS3Sensor.h"
+#include <string.h>
+#include <chrono>
+#include <thread>
 
 
 /* Class Implementation ------------------------------------------------------*/
@@ -50,7 +53,7 @@
  * @param i2c object of an helper class which handles the I2C peripheral
  * @param address the address of the component's instance
  */
-LSM6DS3Sensor::LSM6DS3Sensor(TwoWire *i2c) : dev_i2c(i2c)
+LSM6DS3Sensor::LSM6DS3Sensor(tI2CInterface *i2c) : dev_i2c(i2c)
 {
   address = LSM6DS3_ACC_GYRO_I2C_ADDRESS_HIGH;
   
@@ -141,7 +144,7 @@ LSM6DS3Sensor::LSM6DS3Sensor(TwoWire *i2c) : dev_i2c(i2c)
  * @param i2c object of an helper class which handles the I2C peripheral
  * @param address the address of the component's instance
  */
-LSM6DS3Sensor::LSM6DS3Sensor(TwoWire *i2c, uint8_t address) : dev_i2c(i2c), address(address)
+LSM6DS3Sensor::LSM6DS3Sensor(tI2CInterface *i2c, uint8_t address) : dev_i2c(i2c), address(address)
 { 
   /* Enable register address automatically incremented during a multiple byte
      access with a serial interface. */
@@ -1183,7 +1186,7 @@ LSM6DS3StatusTypeDef LSM6DS3Sensor::Reset_Step_Counter(void)
     return LSM6DS3_STATUS_ERROR;
   }
   
-  delay(10);
+  std::this_thread::sleep_for(std::chrono::milliseconds(10));
   
   if ( LSM6DS3_ACC_GYRO_W_PedoStepReset( (void *)this, LSM6DS3_ACC_GYRO_PEDO_RST_STEP_DISABLED ) == MEMS_ERROR )
   {

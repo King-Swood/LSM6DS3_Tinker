@@ -45,8 +45,9 @@
 
 /* Includes ------------------------------------------------------------------*/
 
-#include "Wire.h"
+//#include "Wire.h"
 #include "LSM6DS3_ACC_GYRO_Driver.h"
+#include <stddef.h>
 
 /* Defines -------------------------------------------------------------------*/
 
@@ -123,6 +124,17 @@ typedef struct
 
 /* Class Declaration ---------------------------------------------------------*/
 
+class tI2CInterface
+{
+public:
+	virtual void beginTransmission(uint8_t address) = 0;
+	virtual void endTransmission(bool sendStop = true) = 0;
+	virtual size_t write(uint8_t value) = 0;
+	virtual uint8_t requestFrom(uint8_t address, size_t bytes) = 0;
+	virtual int available() = 0;
+	virtual int read() = 0;
+};
+
 /**
  * Abstract class of an LSM6DS3 Inertial Measurement Unit (IMU) 6 axes
  * sensor.
@@ -130,8 +142,8 @@ typedef struct
 class LSM6DS3Sensor
 {
   public:
-    LSM6DS3Sensor                                     (TwoWire *i2c);
-    LSM6DS3Sensor                                     (TwoWire *i2c, uint8_t address);
+	LSM6DS3Sensor                                     (tI2CInterface *i2c);
+	LSM6DS3Sensor                                     (tI2CInterface *i2c, uint8_t address);
     LSM6DS3StatusTypeDef Enable_X                     (void);
     LSM6DS3StatusTypeDef Enable_G                     (void);
     LSM6DS3StatusTypeDef Disable_X                    (void);
@@ -203,7 +215,7 @@ class LSM6DS3Sensor
       dev_i2c->write(RegisterAddr);
       dev_i2c->endTransmission(false);
 
-      dev_i2c->requestFrom(((uint8_t)(((address) >> 1) & 0x7F)), (byte) NumByteToRead);
+	  dev_i2c->requestFrom(((uint8_t)(((address) >> 1) & 0x7F)), (uint8_t) NumByteToRead);
 
       int i=0;
       while (dev_i2c->available())
@@ -242,7 +254,7 @@ class LSM6DS3Sensor
     LSM6DS3StatusTypeDef Set_G_ODR_When_Disabled(float odr);
 
     /* Helper classes. */
-    TwoWire *dev_i2c;
+	tI2CInterface *dev_i2c;
 
     /* Configuration */
     uint8_t address;
