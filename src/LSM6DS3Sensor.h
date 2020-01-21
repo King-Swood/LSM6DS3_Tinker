@@ -48,6 +48,7 @@
 //#include "Wire.h"
 #include "LSM6DS3_ACC_GYRO_Driver.h"
 #include <stddef.h>
+#include <linux/i2c-dev.h>
 
 /* Defines -------------------------------------------------------------------*/
 
@@ -127,12 +128,8 @@ typedef struct
 class tI2CInterface
 {
 public:
-	virtual void beginTransmission(uint8_t address) = 0;
-	virtual void endTransmission(bool sendStop = true) = 0;
-	virtual size_t write(uint8_t value) = 0;
-	virtual uint8_t requestFrom(uint8_t address, size_t bytes) = 0;
-	virtual int available() = 0;
-	virtual int read() = 0;
+	virtual uint8_t Write (uint8_t address, const uint8_t *buffer, uint16_t length) = 0;
+	virtual uint8_t Read (uint8_t address, uint8_t *buffer, uint16_t length) = 0;
 };
 
 /**
@@ -210,21 +207,8 @@ class LSM6DS3Sensor
      * @retval 0 if ok, an error code otherwise.
      */
     uint8_t IO_Read(uint8_t* pBuffer, uint8_t RegisterAddr, uint16_t NumByteToRead)
-    {
-      dev_i2c->beginTransmission(((uint8_t)(((address) >> 1) & 0x7F)));
-      dev_i2c->write(RegisterAddr);
-      dev_i2c->endTransmission(false);
-
-	  dev_i2c->requestFrom(((uint8_t)(((address) >> 1) & 0x7F)), (uint8_t) NumByteToRead);
-
-      int i=0;
-      while (dev_i2c->available())
-      {
-        pBuffer[i] = dev_i2c->read();
-        i++;
-      }
-
-      return 0;
+	{
+	  return dev_i2c->Read(RegisterAddr, pBuffer, NumByteToRead);
     }
     
     /**
@@ -235,16 +219,8 @@ class LSM6DS3Sensor
      * @retval 0 if ok, an error code otherwise.
      */
     uint8_t IO_Write(uint8_t* pBuffer, uint8_t RegisterAddr, uint16_t NumByteToWrite)
-    {
-      dev_i2c->beginTransmission(((uint8_t)(((address) >> 1) & 0x7F)));
-
-      dev_i2c->write(RegisterAddr);
-      for (int i = 0 ; i < NumByteToWrite ; i++)
-        dev_i2c->write(pBuffer[i]);
-
-      dev_i2c->endTransmission(true);
-
-      return 0;
+	{
+		return dev_i2c->Read(RegisterAddr, pBuffer, NumByteToWrite);
     }
 
   private:

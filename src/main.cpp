@@ -1,0 +1,13 @@
+#include <cstdio>
+#include "LSM6DS3Sensor.h"
+#include "i2cTinker.h"
+
+int main()
+{
+	printf("main()\n");
+
+	tI2CTinker i2c(tI2CTinker::eI2CBus::One);
+	LSM6DS3Sensor sensor(&i2c);
+
+	return 0;
+}
