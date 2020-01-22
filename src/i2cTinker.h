@@ -15,6 +15,7 @@ public:
 	tI2CTinker(eI2CBus i2cBus = eI2CBus::One);
 	tI2CTinker(uint8_t slaveAddress, eI2CBus i2cBus = eI2CBus::One);
 	~tI2CTinker();
+	bool IsValid() const {return valid_;}
 	uint8_t Write (uint8_t address, const uint8_t *buffer, uint16_t length) override;
 	uint8_t Read (uint8_t address, uint8_t *buffer, uint16_t length) override;
 private:

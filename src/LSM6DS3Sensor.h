@@ -48,7 +48,7 @@
 //#include "Wire.h"
 #include "LSM6DS3_ACC_GYRO_Driver.h"
 #include <stddef.h>
-#include <linux/i2c-dev.h>
+//#include <linux/i2c-dev.h>
 
 /* Defines -------------------------------------------------------------------*/
 
@@ -141,6 +141,7 @@ class LSM6DS3Sensor
   public:
 	LSM6DS3Sensor                                     (tI2CInterface *i2c);
 	LSM6DS3Sensor                                     (tI2CInterface *i2c, uint8_t address);
+	bool IsValid(void) const {return valid;}
     LSM6DS3StatusTypeDef Enable_X                     (void);
     LSM6DS3StatusTypeDef Enable_G                     (void);
     LSM6DS3StatusTypeDef Disable_X                    (void);
@@ -239,6 +240,7 @@ class LSM6DS3Sensor
     float X_Last_ODR;
     uint8_t G_isEnabled;
     float G_Last_ODR;
+    bool valid;
 };
 
 #ifdef __cplusplus

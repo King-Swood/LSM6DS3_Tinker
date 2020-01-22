@@ -55,6 +55,7 @@
  */
 LSM6DS3Sensor::LSM6DS3Sensor(tI2CInterface *i2c) : dev_i2c(i2c)
 {
+	valid = false;
   address = LSM6DS3_ACC_GYRO_I2C_ADDRESS_HIGH;
   
   /* Enable register address automatically incremented during a multiple byte
@@ -138,6 +139,8 @@ LSM6DS3Sensor::LSM6DS3Sensor(tI2CInterface *i2c) : dev_i2c(i2c)
   G_Last_ODR = 104.0f;
 
   G_isEnabled = 0;
+
+  valid = true;
 };
 
 /** Constructor
@@ -145,7 +148,8 @@ LSM6DS3Sensor::LSM6DS3Sensor(tI2CInterface *i2c) : dev_i2c(i2c)
  * @param address the address of the component's instance
  */
 LSM6DS3Sensor::LSM6DS3Sensor(tI2CInterface *i2c, uint8_t address) : dev_i2c(i2c), address(address)
-{ 
+{
+       valid = false;	
   /* Enable register address automatically incremented during a multiple byte
      access with a serial interface. */
   if ( LSM6DS3_ACC_GYRO_W_IF_Addr_Incr( (void *)this, LSM6DS3_ACC_GYRO_IF_INC_ENABLED ) == MEMS_ERROR )
@@ -227,6 +231,8 @@ LSM6DS3Sensor::LSM6DS3Sensor(tI2CInterface *i2c, uint8_t address) : dev_i2c(i2c)
   G_Last_ODR = 104.0f;
 
   G_isEnabled = 0;
+
+  valid = true;
 };
 
 /**

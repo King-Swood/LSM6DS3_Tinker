@@ -2,8 +2,9 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
-#include <linux/i2c-dev.h>
-#include <i2c/smbus.h>
+#include "i2c-dev.h"
+//#include <linux/i2c.h>
+//#include <i2c/smbus.h>
 #include <stdio.h>
 
 tI2CTinker::tI2CTinker(eI2CBus i2cBus)
@@ -24,8 +25,9 @@ tI2CTinker::tI2CTinker(uint8_t slaveAddress, eI2CBus i2cBus)
 		fileHandle_ = open (filename, O_RDWR);
 		if (fileHandle_ >= 0)
 		{
-			if (ioctl(fileHandle_, I2C_SLAVE, slaveAddress))
+			if (ioctl(fileHandle_, I2C_SLAVE, slaveAddress >> 1) >= 0)
 			{
+				printf("Opened device...\n");
 				valid_ = true;
 			}
 			else
@@ -52,11 +54,19 @@ tI2CTinker::~tI2CTinker()
 uint8_t tI2CTinker::Write(uint8_t address, const uint8_t *buffer, uint16_t length)
 {
 	uint8_t bytesWritten = i2c_smbus_write_block_data(fileHandle_, address, length, buffer);
-	return bytesWritten;
+	//printf("bytesWritten: %d\n", bytesWritten);
+	return (bytesWritten == length) ? 0 : 1;
 }
 
 uint8_t tI2CTinker::Read(uint8_t address, uint8_t *buffer, uint16_t length)
 {
+	//printf("Read address %02X, length %d\n", address, length);
 	uint8_t bytesRead = i2c_smbus_read_i2c_block_data(fileHandle_, address, length, buffer);
-	return bytesRead;
+	printf("Data Read: ");
+	for (int i = 0; i < length; ++i)
+	{
+		printf(" %02X", buffer[i]);
+	}
+	printf("\n");
+	return (bytesRead == length) ? 0 : 1;
 }
